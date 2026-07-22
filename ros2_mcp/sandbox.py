@@ -13,41 +13,48 @@ Thread safety:
 """
 
 from __future__ import annotations
-import time
+
 import threading
+import time
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
 
 class SafetyLevel(str, Enum):
-    READ_ONLY  = "read_only"
+    READ_ONLY = "read_only"
     SAFE_WRITE = "safe_write"
-    FULL       = "full"
+    FULL = "full"
 
 
 # ── Default allowlists ───────────────────────────────────────────────────────
 # Tune these for your specific robot platform.
 
-DEFAULT_SAFE_TOPICS: frozenset = frozenset({
-    "/cmd_vel",
-    "/target_velocity",
-    "/led_state",
-    "/speaker_cmd",
-    "/arm_target_angle",
-})
+DEFAULT_SAFE_TOPICS: frozenset = frozenset(
+    {
+        "/cmd_vel",
+        "/target_velocity",
+        "/led_state",
+        "/speaker_cmd",
+        "/arm_target_angle",
+    }
+)
 
-DEFAULT_SAFE_NODES: frozenset = frozenset({
-    "controller_manager",
-    "nav2_controller",
-    "nav2_planner",
-    "robot_state_publisher",
-})
+DEFAULT_SAFE_NODES: frozenset = frozenset(
+    {
+        "controller_manager",
+        "nav2_controller",
+        "nav2_planner",
+        "robot_state_publisher",
+    }
+)
 
-DEFAULT_SAFE_PARAMS: frozenset = frozenset({
-    ("nav2_controller", "max_vel_x"),
-    ("nav2_controller", "max_vel_theta"),
-    ("nav2_controller", "min_vel_x"),
-})
+DEFAULT_SAFE_PARAMS: frozenset = frozenset(
+    {
+        ("nav2_controller", "max_vel_x"),
+        ("nav2_controller", "max_vel_theta"),
+        ("nav2_controller", "min_vel_x"),
+    }
+)
 
 
 class CommandSandbox:
@@ -63,26 +70,26 @@ class CommandSandbox:
     def __init__(
         self,
         level: SafetyLevel = SafetyLevel.SAFE_WRITE,
-        allowed_topics:  Optional[set] = None,
-        allowed_nodes:   Optional[set] = None,
-        allowed_params:  Optional[set] = None,
+        allowed_topics: Optional[set] = None,
+        allowed_nodes: Optional[set] = None,
+        allowed_params: Optional[set] = None,
     ) -> None:
         self.level = level
-        self.allowed_topics  = set(allowed_topics  or DEFAULT_SAFE_TOPICS)
-        self.allowed_nodes   = set(allowed_nodes   or DEFAULT_SAFE_NODES)
-        self.allowed_params  = set(allowed_params  or DEFAULT_SAFE_PARAMS)
+        self.allowed_topics = set(allowed_topics or DEFAULT_SAFE_TOPICS)
+        self.allowed_nodes = set(allowed_nodes or DEFAULT_SAFE_NODES)
+        self.allowed_params = set(allowed_params or DEFAULT_SAFE_PARAMS)
         self._audit_log: List[Dict] = []
-        self._lock = threading.Lock()   # FIX BUG-08: protect audit log from concurrent writes
+        self._lock = threading.Lock()  # FIX BUG-08: protect audit log from concurrent writes
 
     # ── Internal logging ─────────────────────────────────────────────────────
 
     def _log(self, action: str, target: str, allowed: bool, reason: str = "") -> None:
         entry = {
-            "timestamp":    round(time.time(), 3),   # FIX BUG-07: module-level import, not per-call
-            "action":       action,
-            "target":       target,
-            "allowed":      allowed,
-            "reason":       reason,
+            "timestamp": round(time.time(), 3),  # FIX BUG-07: module-level import, not per-call
+            "action": action,
+            "target": target,
+            "allowed": allowed,
+            "reason": reason,
             "safety_level": self.level.value,
         }
         with self._lock:
@@ -171,7 +178,7 @@ class CommandSandbox:
     def get_audit_summary(self) -> Dict:
         """Return aggregate counts for quick health-check reporting."""
         with self._lock:
-            total   = len(self._audit_log)
+            total = len(self._audit_log)
             allowed = sum(1 for e in self._audit_log if e["allowed"])
             blocked = total - allowed
         return {
@@ -184,4 +191,5 @@ class CommandSandbox:
 
 class SandboxBlockedError(Exception):
     """Raised when an AI agent attempts an action blocked by the CommandSandbox."""
+
     pass

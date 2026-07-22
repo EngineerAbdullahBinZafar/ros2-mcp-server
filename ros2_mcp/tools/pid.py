@@ -13,15 +13,15 @@ Fixes applied:
 """
 
 from __future__ import annotations
-from typing import Any, Dict, Optional, Tuple
 
+from typing import Any, Dict, Optional, Tuple
 
 # Safety bounds: (min, max) for each gain type.
 # These are sane defaults; tune them for your controller's expected range.
 PID_BOUNDS: Dict[str, Tuple[float, float]] = {
-    "kp": (0.0,   500.0),
-    "ki": (0.0,   100.0),
-    "kd": (0.0,   100.0),
+    "kp": (0.0, 500.0),
+    "ki": (0.0, 100.0),
+    "kd": (0.0, 100.0),
 }
 
 # Generic bounds used for non-standard param names
@@ -119,9 +119,9 @@ def handle_tune_pid(
 
     if validation_errors:
         return {
-            "status":   "validation_error",
+            "status": "validation_error",
             "rejected": validation_errors,
-            "reason":   "One or more gains failed safety bounds validation. No changes applied.",
+            "reason": "One or more gains failed safety bounds validation. No changes applied.",
             "guidance": (
                 "Check PID_BOUNDS in ros2_mcp/tools/pid.py to adjust allowed ranges. "
                 "Negative proportional gains will invert the control signal and cause instability."
@@ -136,8 +136,8 @@ def handle_tune_pid(
         result["value"] = value
         results.append(result)
 
-    all_ok      = all(r.get("status") == "ok"      for r in results)
-    any_blocked = any(r.get("status") == "blocked"  for r in results)
+    all_ok = all(r.get("status") == "ok" for r in results)
+    any_blocked = any(r.get("status") == "blocked" for r in results)
 
     if all_ok:
         status = "ok"
@@ -147,7 +147,7 @@ def handle_tune_pid(
         status = "partial"
 
     return {
-        "status":  status,
+        "status": status,
         "applied": results,
         "guidance": (
             "Monitor the error topic for 3–5 seconds after each change before applying the next. "

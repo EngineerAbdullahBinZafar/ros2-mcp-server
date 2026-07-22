@@ -13,9 +13,9 @@ Fixes applied:
 """
 
 from __future__ import annotations
+
 import math
 from typing import Any, Dict, List, Optional
-
 
 # Default LiDAR blind-spot threshold.
 # RPLiDAR A2 = 0.15m, Hokuyo UST = 0.02m — override via range_min in the scan message.
@@ -39,23 +39,21 @@ def handle_system_diagnostics(ros2: Any) -> Dict:
     healthy: List[str] = []
 
     # ── 1. Battery ────────────────────────────────────────────────────────────
-    batt     = ros2.read_topic("/battery_state", "sensor_msgs/BatteryState", timeout_ms=500)
+    batt = ros2.read_topic("/battery_state", "sensor_msgs/BatteryState", timeout_ms=500)
     batt_val = batt.get("value") or {}
-    voltage  = batt_val.get("voltage")
-    pct      = batt_val.get("percentage")
+    voltage = batt_val.get("voltage")
+    pct = batt_val.get("percentage")
 
     if voltage is not None:
         pct_display = f"{pct * 100:.0f}%" if pct is not None else "?%"
-        volt_str    = f"{voltage:.1f}V"
+        volt_str = f"{voltage:.1f}V"
 
         if pct is not None and pct < 0.20:
             issues.append(
                 f"CRITICAL: Battery at {pct_display} ({volt_str}) — land/return to base immediately"
             )
         elif pct is not None and pct < 0.35:
-            warnings.append(
-                f"Battery at {pct_display} ({volt_str}) — consider recharging soon"
-            )
+            warnings.append(f"Battery at {pct_display} ({volt_str}) — consider recharging soon")
         else:
             # FIX BUG-04: only use pct in healthy message if it's actually available
             healthy.append(f"Battery: {pct_display} ({volt_str})")
@@ -63,16 +61,13 @@ def handle_system_diagnostics(ros2: Any) -> Dict:
         warnings.append("/battery_state unreachable — power status unknown")
 
     # ── 2. LiDAR ─────────────────────────────────────────────────────────────
-    scan     = ros2.read_topic("/scan", "sensor_msgs/LaserScan", timeout_ms=500)
+    scan = ros2.read_topic("/scan", "sensor_msgs/LaserScan", timeout_ms=500)
     scan_val = scan.get("value") or {}
     raw_ranges = scan_val.get("ranges", [])
 
     # FIX M-06: Filter sensor blind-spot readings (r < range_min) and non-finite values
     range_min = scan_val.get("range_min", _LIDAR_FALLBACK_RANGE_MIN)
-    valid = [
-        r for r in raw_ranges
-        if math.isfinite(r) and r >= range_min
-    ]
+    valid = [r for r in raw_ranges if math.isfinite(r) and r >= range_min]
 
     if raw_ranges:
         if not valid:
@@ -98,10 +93,10 @@ def handle_system_diagnostics(ros2: Any) -> Dict:
         warnings.append("/scan returned no data — LiDAR may be offline or not publishing")
 
     # ── 3. IMU ───────────────────────────────────────────────────────────────
-    imu     = ros2.read_topic("/imu/data", "sensor_msgs/Imu", timeout_ms=500)
+    imu = ros2.read_topic("/imu/data", "sensor_msgs/Imu", timeout_ms=500)
     imu_val = imu.get("value") or {}
-    accel   = imu_val.get("linear_acceleration") or {}
-    az      = accel.get("z")
+    accel = imu_val.get("linear_acceleration") or {}
+    az = accel.get("z")
 
     if az is not None:
         deviation = abs(az - 9.81)
@@ -136,10 +131,10 @@ def handle_system_diagnostics(ros2: Any) -> Dict:
         rec = "All systems nominal. Robot appears ready for operation."
 
     return {
-        "system_status":   overall,
+        "system_status": overall,
         "critical_issues": issues,
-        "warnings":        warnings,
-        "healthy_checks":  healthy,
-        "active_nodes":    node_count,
-        "recommendation":  rec,
+        "warnings": warnings,
+        "healthy_checks": healthy,
+        "active_nodes": node_count,
+        "recommendation": rec,
     }

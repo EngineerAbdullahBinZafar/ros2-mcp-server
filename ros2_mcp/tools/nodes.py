@@ -10,6 +10,7 @@ extracted from the (name, namespace) tuples returned by list_nodes().
 """
 
 from __future__ import annotations
+
 from typing import Any, Dict, List
 
 
@@ -20,7 +21,13 @@ def handle_list_nodes(ros2: Any) -> Dict:
     for entry in raw:
         if isinstance(entry, (tuple, list)) and len(entry) == 2:
             name, ns = entry
-            nodes.append({"name": name, "namespace": ns, "full_name": f"{ns}{name}" if ns != "/" else f"/{name}"})
+            nodes.append(
+                {
+                    "name": name,
+                    "namespace": ns,
+                    "full_name": f"{ns}{name}" if ns != "/" else f"/{name}",
+                }
+            )
         else:
             # Fallback: raw string node name (old mock format)
             nodes.append({"name": str(entry), "namespace": "/", "full_name": f"/{entry}"})
@@ -55,9 +62,9 @@ def handle_get_node_info(ros2: Any, node_name: str) -> Dict:
 
     if not found:
         return {
-            "node":  node_name,
+            "node": node_name,
             "error": f"Node '{clean_name}' not found. Use list_nodes to see active nodes.",
-            "hint":  "ROS2 node names are case-sensitive.",
+            "hint": "ROS2 node names are case-sensitive.",
         }
 
     # Find topics whose name contains the node name as a path component
@@ -71,10 +78,10 @@ def handle_get_node_info(ros2: Any, node_name: str) -> Dict:
             related.append(t)
 
     return {
-        "node":           node_name,
-        "found":          True,
+        "node": node_name,
+        "found": True,
         "related_topics": related,
-        "related_count":  len(related),
+        "related_count": len(related),
         "note": (
             "Topic associations are inferred from naming conventions. "
             "For the authoritative publisher/subscriber graph, "

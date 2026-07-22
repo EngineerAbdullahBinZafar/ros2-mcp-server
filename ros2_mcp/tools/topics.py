@@ -6,15 +6,17 @@ instead of the previous sequential approach (~4× faster on a live robot).
 """
 
 from __future__ import annotations
+
 import concurrent.futures
 from typing import Any, Dict, List
+
 from ..sandbox import SandboxBlockedError
 
 
 def handle_list_topics(ros2: Any) -> Dict:
     topics = ros2.list_topics()
     return {
-        "total":  len(topics),
+        "total": len(topics),
         "topics": topics,
     }
 
@@ -55,11 +57,11 @@ def handle_publish_topic(
 # Key topics fetched in the multi-topic snapshot.
 # (topic, msg_type, timeout_ms, latched)
 _SNAPSHOT_TOPICS: List[tuple] = [
-    ("/scan",          "sensor_msgs/LaserScan",    600,  False),
-    ("/imu/data",      "sensor_msgs/Imu",          600,  False),
-    ("/battery_state", "sensor_msgs/BatteryState", 600,  False),
-    ("/cmd_vel",       "geometry_msgs/Twist",       400,  False),
-    ("/odom",          "nav_msgs/Odometry",         400,  False),
+    ("/scan", "sensor_msgs/LaserScan", 600, False),
+    ("/imu/data", "sensor_msgs/Imu", 600, False),
+    ("/battery_state", "sensor_msgs/BatteryState", 600, False),
+    ("/cmd_vel", "geometry_msgs/Twist", 400, False),
+    ("/odom", "nav_msgs/Odometry", 400, False),
 ]
 
 
@@ -87,6 +89,6 @@ def handle_get_robot_snapshot(ros2: Any) -> Dict:
             snapshot[topic] = result
 
     return {
-        "snapshot":    snapshot,
+        "snapshot": snapshot,
         "topic_count": len(_SNAPSHOT_TOPICS),
     }

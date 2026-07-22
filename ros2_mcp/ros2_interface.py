@@ -422,6 +422,7 @@ def create_interface() -> Any:
     The caller never needs to know which mode is active.
     """
     import os
+
     if os.environ.get("ROS2_MCP_DEMO_SIM") == "1":
         return MockInterface()
 

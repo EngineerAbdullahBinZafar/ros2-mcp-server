@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 setup(
     name="ros2-mcp-server",
@@ -37,9 +37,19 @@ setup(
         "Operating System :: MacOS",
     ],
     keywords=[
-        "ros2", "mcp", "model-context-protocol", "claude", "ai-agents",
-        "robotics", "autonomous-systems", "embedded-systems", "llm",
-        "antigravity", "openai", "pid-tuning", "sensor-fusion"
+        "ros2",
+        "mcp",
+        "model-context-protocol",
+        "claude",
+        "ai-agents",
+        "robotics",
+        "autonomous-systems",
+        "embedded-systems",
+        "llm",
+        "antigravity",
+        "openai",
+        "pid-tuning",
+        "sensor-fusion",
     ],
     project_urls={
         "Bug Tracker": "https://github.com/EngineerAbdullahBinZafar/ros2-mcp-server/issues",
