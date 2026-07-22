@@ -33,7 +33,7 @@ jobs:
         run: python run_tests.py
 
       - name: Run pytest with coverage
-        run: pytest test/ -v --tb=short --cov=ros2_mcp --cov-report=term-missing
+        run: pytest tests/ -v --tb=short --cov=ros2_mcp --cov-report=term-missing
 
   lint:
     name: "Lint — ruff"
@@ -46,4 +46,4 @@ jobs:
           cache: pip
       - run: pip install ruff
       - name: Run ruff linter
-        run: ruff check ros2_mcp/ test/ --output-format=github
+        run: ruff check ros2_mcp/ tests/ --output-format=github

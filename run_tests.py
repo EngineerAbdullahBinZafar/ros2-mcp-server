@@ -10,7 +10,7 @@ import traceback
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, ROOT)
 
-from test.test_server import (
+from tests.test_server import (
     # Sandbox tests
     test_sandbox_read_only_blocks_publish,
     test_sandbox_safe_write_allows_allowlisted,
