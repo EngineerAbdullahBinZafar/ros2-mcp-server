@@ -5,6 +5,7 @@
 <br/>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-00d4ff.svg?style=for-the-badge&labelColor=0d1117)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/EngineerAbdullahBinZafar/ros2-mcp-server/ci.yml?branch=main&style=for-the-badge&label=CI&color=00d4ff&labelColor=0d1117)](https://github.com/EngineerAbdullahBinZafar/ros2-mcp-server/actions)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white&labelColor=0d1117)](https://python.org)
 [![ROS2](https://img.shields.io/badge/ROS2-Humble%20%7C%20Jazzy-22314E?style=for-the-badge&logo=ros&logoColor=white&labelColor=0d1117)](https://docs.ros.org)
 [![MCP](https://img.shields.io/badge/Protocol-MCP%202024--11--05-0055ff?style=for-the-badge&labelColor=0d1117)](https://spec.modelcontextprotocol.io)
@@ -212,7 +213,7 @@ cd ros2-mcp-server
 python run_tests.py
 ```
 
-All 13 unit tests run in **simulation mode** — no ROS2 installation required.
+All 38 unit tests run in **simulation mode** — no ROS2 installation required.
 
 ---
 

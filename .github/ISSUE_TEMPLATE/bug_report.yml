@@ -1,0 +1,58 @@
+name: Bug Report
+description: Create a report to help us improve ros2-mcp-server
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report! 
+        Please provide as much detail as possible to help us reproduce the issue.
+  - type: input
+    id: version
+    attributes:
+      label: ros2-mcp-server Version
+      description: "Which version are you using? (e.g., v1.1.0)"
+      placeholder: "v1.1.0"
+    validations:
+      required: true
+  - type: dropdown
+    id: ros_distro
+    attributes:
+      label: ROS2 Distribution
+      description: What ROS2 version are you using?
+      options:
+        - Humble
+        - Iron
+        - Jazzy
+        - Simulation (No ROS2 installed)
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: safety_level
+    attributes:
+      label: Safety Level
+      description: What SAFETY_LEVEL was active when the bug occurred?
+      options:
+        - safe_write
+        - read_only
+        - full
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+      placeholder: When I ask the AI agent to publish to /cmd_vel, the server crashes with...
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / Output
+      description: Please paste any relevant logs, errors, or sandbox audit logs.
+      render: shell
+    validations:
+      required: false

@@ -5,23 +5,22 @@ Covers all 11 bugs fixed and all 7 missing features added.
 All tests run in simulation mode — zero ROS2 installation required.
 """
 
-import sys
-import os
-import math
 import json
+import math
+import os
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from ros2_mcp.sandbox import CommandSandbox, SafetyLevel, SandboxBlockedError
 from ros2_mcp.ros2_interface import MockInterface
+from ros2_mcp.sandbox import CommandSandbox, SafetyLevel, SandboxBlockedError
 from ros2_mcp.tools.diagnostics import handle_system_diagnostics
-from ros2_mcp.tools.topics import handle_list_topics, handle_read_topic, handle_get_robot_snapshot
-from ros2_mcp.tools.nodes import handle_list_nodes, handle_get_node_info
-from ros2_mcp.tools.pid import handle_get_pid_state, handle_tune_pid, PID_BOUNDS
-from ros2_mcp.tools.params import handle_get_parameter, handle_set_parameter
-
+from ros2_mcp.tools.nodes import handle_get_node_info, handle_list_nodes
+from ros2_mcp.tools.pid import PID_BOUNDS, handle_get_pid_state, handle_tune_pid
+from ros2_mcp.tools.topics import handle_get_robot_snapshot, handle_list_topics, handle_read_topic
 
 # ── SANDBOX TESTS ─────────────────────────────────────────────────────────────
+
 
 def test_sandbox_read_only_blocks_publish():
     sandbox = CommandSandbox(SafetyLevel.READ_ONLY)
@@ -54,6 +53,7 @@ def test_sandbox_full_allows_any():
 def test_sandbox_audit_log_thread_safe():
     """Audit log must work correctly under concurrent writes."""
     import threading
+
     sandbox = CommandSandbox(SafetyLevel.FULL)
     errors = []
 
@@ -107,6 +107,7 @@ def test_sandbox_read_only_blocks_set_parameter():
 
 # ── MOCK INTERFACE TESTS ──────────────────────────────────────────────────────
 
+
 def test_mock_list_topics_has_required_topics():
     iface = MockInterface()
     names = [t["topic"] for t in iface.list_topics()]
@@ -140,9 +141,9 @@ def test_mock_read_scan_realistic():
 def test_mock_read_battery_all_fields():
     iface = MockInterface()
     val = iface.read_topic("/battery_state", "sensor_msgs/BatteryState")["value"]
-    assert "voltage"    in val
+    assert "voltage" in val
     assert "percentage" in val
-    assert "current"    in val
+    assert "current" in val
     assert 22.0 <= val["voltage"] <= 25.2
     assert 0.35 <= val["percentage"] <= 0.98
 
@@ -178,15 +179,16 @@ def test_mock_publish_returns_string():
 
 # ── DIAGNOSTICS TESTS ─────────────────────────────────────────────────────────
 
+
 def test_diagnostics_returns_valid_structure():
     iface = MockInterface()
     result = handle_system_diagnostics(iface)
-    assert "system_status"   in result
+    assert "system_status" in result
     assert "critical_issues" in result
-    assert "warnings"        in result
-    assert "healthy_checks"  in result
-    assert "active_nodes"    in result
-    assert "recommendation"  in result
+    assert "warnings" in result
+    assert "healthy_checks" in result
+    assert "active_nodes" in result
+    assert "recommendation" in result
     assert result["system_status"] in ("HEALTHY", "WARNING", "CRITICAL")
 
 
@@ -195,6 +197,7 @@ def test_diagnostics_sensor_fault_not_collision():
     BUG-03 regression: when all LiDAR rays are NaN/inf,
     the result must be a sensor-fault warning, NOT 'collision at 0.00m'.
     """
+
     class AllNaNScanInterface(MockInterface):
         def read_topic(self, topic, msg_type=None, timeout_ms=3000, latched=False):
             if topic == "/scan":
@@ -211,10 +214,15 @@ def test_diagnostics_sensor_fault_not_collision():
 
     result = handle_system_diagnostics(AllNaNScanInterface())
     all_text = " ".join(result["critical_issues"] + result["warnings"])
-    assert "collision" not in all_text.lower() or "sensor fault" in all_text.lower() or "0-invalid" not in all_text.lower()
+    assert (
+        "collision" not in all_text.lower()
+        or "sensor fault" in all_text.lower()
+        or "0-invalid" not in all_text.lower()
+    )
     # The key assertion: should report sensor fault, NOT "collision imminent"
-    assert any("fault" in i.lower() or "invalid" in i.lower() for i in result["critical_issues"]), \
+    assert any("fault" in i.lower() or "invalid" in i.lower() for i in result["critical_issues"]), (
         f"Expected sensor-fault critical issue, got: {result['critical_issues']}"
+    )
 
 
 def test_diagnostics_battery_pct_none_no_crash():
@@ -222,6 +230,7 @@ def test_diagnostics_battery_pct_none_no_crash():
     BUG-04 regression: if voltage exists but percentage is None,
     must not crash with TypeError.
     """
+
     class NoPctBattery(MockInterface):
         def read_topic(self, topic, msg_type=None, timeout_ms=3000, latched=False):
             if topic == "/battery_state":
@@ -238,6 +247,7 @@ def test_diagnostics_battery_pct_none_no_crash():
 
 
 # ── TOPICS TOOLS TESTS ────────────────────────────────────────────────────────
+
 
 def test_list_topics_total():
     iface = MockInterface()
@@ -269,14 +279,15 @@ def test_get_robot_snapshot_parallel():
 
 # ── NODES TOOLS TESTS ─────────────────────────────────────────────────────────
 
+
 def test_list_nodes_structure():
     iface = MockInterface()
     result = handle_list_nodes(iface)
-    assert "total"  in result
-    assert "nodes"  in result
+    assert "total" in result
+    assert "nodes" in result
     assert result["total"] >= 5
     for n in result["nodes"]:
-        assert "name"      in n
+        assert "name" in n
         assert "namespace" in n
         assert "full_name" in n
 
@@ -305,90 +316,97 @@ def test_get_node_info_case_sensitive():
 
 # ── PID TOOLS TESTS ──────────────────────────────────────────────────────────
 
+
 def test_get_pid_state_returns_gains():
     iface = MockInterface()
-    sandbox = CommandSandbox(SafetyLevel.FULL)
     result = handle_get_pid_state(iface, "nav2_controller")
-    assert "gains"  in result
+    assert "gains" in result
     assert "bounds" in result
     assert "Kp" in result["gains"]
 
 
 def test_tune_pid_rejects_negative_kp():
     """BUG-09 regression: negative Kp must be caught before hitting hardware."""
-    iface   = MockInterface()
+    iface = MockInterface()
     sandbox = CommandSandbox(SafetyLevel.FULL)
-    result  = handle_tune_pid(iface, sandbox, "nav2_controller", kp=-5.0)
+    result = handle_tune_pid(iface, sandbox, "nav2_controller", kp=-5.0)
     assert result["status"] == "validation_error"
     assert any("Kp" in str(r) or "kp" in str(r) for r in result["rejected"])
 
 
 def test_tune_pid_rejects_extreme_value():
     """Gain > PID_BOUNDS max must also be rejected."""
-    iface   = MockInterface()
+    iface = MockInterface()
     sandbox = CommandSandbox(SafetyLevel.FULL)
     _, hi = PID_BOUNDS["kp"]
-    result  = handle_tune_pid(iface, sandbox, "nav2_controller", kp=hi + 1.0)
+    result = handle_tune_pid(iface, sandbox, "nav2_controller", kp=hi + 1.0)
     assert result["status"] == "validation_error"
 
 
 def test_tune_pid_valid_gains_apply():
-    iface   = MockInterface()
+    iface = MockInterface()
     sandbox = CommandSandbox(SafetyLevel.FULL)
-    result  = handle_tune_pid(iface, sandbox, "nav2_controller", kp=0.5, kd=0.1)
+    result = handle_tune_pid(iface, sandbox, "nav2_controller", kp=0.5, kd=0.1)
     assert result["status"] in ("ok", "partial")
     assert "applied" in result
     assert "guidance" in result
 
 
 def test_tune_pid_no_gains_provided():
-    iface   = MockInterface()
+    iface = MockInterface()
     sandbox = CommandSandbox(SafetyLevel.FULL)
-    result  = handle_tune_pid(iface, sandbox, "nav2_controller")
+    result = handle_tune_pid(iface, sandbox, "nav2_controller")
     assert result["status"] == "error"
 
 
 def test_tune_pid_blocked_by_sandbox():
-    iface   = MockInterface()
+    iface = MockInterface()
     sandbox = CommandSandbox(SafetyLevel.READ_ONLY)
-    result  = handle_tune_pid(iface, sandbox, "nav2_controller", kp=0.5)
+    result = handle_tune_pid(iface, sandbox, "nav2_controller", kp=0.5)
     assert result["status"] in ("blocked", "partial", "validation_error", "error")
 
 
 # ── SERVER MCP PROTOCOL TESTS ─────────────────────────────────────────────────
 
+
 def test_server_initialize_response_spec_compliant():
     """BUG-14 regression: initialize must return {protocolVersion, serverInfo:{name,version}}."""
     from ros2_mcp.server import ROS2MCPServer
+
     server = ROS2MCPServer()
-    response = server.handle_request({
-        "jsonrpc": "2.0",
-        "id": 1,
-        "method": "initialize",
-        "params": {},
-    })
+    response = server.handle_request(
+        {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "initialize",
+            "params": {},
+        }
+    )
     result = response["result"]
     assert "protocolVersion" in result
     assert "serverInfo" in result
-    assert "name"    in result["serverInfo"]
+    assert "name" in result["serverInfo"]
     assert "version" in result["serverInfo"]
     assert "capabilities" in result
     assert "tools" in result["capabilities"]
     # serverInfo must NOT contain non-spec keys like 'author' or 'repository'
-    assert "author"     not in result["serverInfo"]
+    assert "author" not in result["serverInfo"]
     assert "repository" not in result["serverInfo"]
 
 
 def test_server_ping_tool_works():
     """M-01: ping tool must exist and return status=ok."""
     from ros2_mcp.server import ROS2MCPServer
+
     server = ROS2MCPServer()
-    response = server.handle_request({
-        "jsonrpc": "2.0",
-        "id": 2,
-        "method": "tools/call",
-        "params": {"name": "ping", "arguments": {}},
-    })
+    response = server.handle_request(
+        {
+            "jsonrpc": "2.0",
+            "id": 2,
+            "method": "tools/call",
+            "params": {"name": "ping", "arguments": {}},
+        }
+    )
     assert response["result"]["isError"] is False
     payload = json.loads(response["result"]["content"][0]["text"])
     assert payload["status"] == "ok"
@@ -397,13 +415,16 @@ def test_server_ping_tool_works():
 def test_server_tools_list_includes_ping():
     """M-01: ping must appear in tools/list."""
     from ros2_mcp.server import ROS2MCPServer
+
     server = ROS2MCPServer()
-    response = server.handle_request({
-        "jsonrpc": "2.0",
-        "id": 3,
-        "method": "tools/list",
-        "params": {},
-    })
+    response = server.handle_request(
+        {
+            "jsonrpc": "2.0",
+            "id": 3,
+            "method": "tools/list",
+            "params": {},
+        }
+    )
     names = [t["name"] for t in response["result"]["tools"]]
     assert "ping" in names
 
@@ -411,22 +432,28 @@ def test_server_tools_list_includes_ping():
 def test_server_unknown_tool_returns_error_not_exception():
     """Unknown tool calls must return isError=True, not raise an exception."""
     from ros2_mcp.server import ROS2MCPServer
+
     server = ROS2MCPServer()
-    response = server.handle_request({
-        "jsonrpc": "2.0",
-        "id": 4,
-        "method": "tools/call",
-        "params": {"name": "nonexistent_tool", "arguments": {}},
-    })
+    response = server.handle_request(
+        {
+            "jsonrpc": "2.0",
+            "id": 4,
+            "method": "tools/call",
+            "params": {"name": "nonexistent_tool", "arguments": {}},
+        }
+    )
     assert response["result"]["isError"] is True
 
 
 def test_server_notification_returns_none():
     """Notification messages must return None (no response)."""
     from ros2_mcp.server import ROS2MCPServer
+
     server = ROS2MCPServer()
-    response = server.handle_request({
-        "jsonrpc": "2.0",
-        "method": "notifications/initialized",
-    })
+    response = server.handle_request(
+        {
+            "jsonrpc": "2.0",
+            "method": "notifications/initialized",
+        }
+    )
     assert response is None
