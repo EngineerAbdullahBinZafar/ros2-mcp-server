@@ -12,20 +12,21 @@ Threading model (live mode):
 """
 
 from __future__ import annotations
-import time
-import threading
+
 import math
+import threading
+import time
 from typing import Any, Dict, List, Optional
 
 # ── ROS2 Native (rclpy) ─────────────────────────────────────────────────────
 try:
     import rclpy
-    from rclpy.node import Node
+    from geometry_msgs.msg import PoseStamped, Twist
+    from rcl_interfaces.srv import GetParameters, SetParameters
     from rclpy.executors import MultiThreadedExecutor
-    from std_msgs.msg import Float32, Int32, String, Bool
-    from geometry_msgs.msg import Twist, PoseStamped
-    from sensor_msgs.msg import LaserScan, Imu, BatteryState
-    from rcl_interfaces.srv import SetParameters, GetParameters
+    from rclpy.node import Node
+    from sensor_msgs.msg import BatteryState, Imu, LaserScan
+    from std_msgs.msg import Bool, Float32, Int32, String
 
     ROS2_AVAILABLE = True
 except ImportError:
@@ -35,6 +36,7 @@ except ImportError:
 # ── WebSocket Fallback (rosbridge) ───────────────────────────────────────────
 try:
     import websocket  # noqa: F401
+
     ROSBRIDGE_AVAILABLE = True
 except ImportError:
     ROSBRIDGE_AVAILABLE = False
@@ -118,6 +120,7 @@ class ROS2NativeInterface:
     def _make_callback(self, topic: str):
         def callback(msg):
             self._cache.update(topic, self._serialize_msg(msg))
+
         return callback
 
     def _serialize_msg(self, msg: Any) -> Any:
@@ -235,7 +238,7 @@ class ROS2NativeInterface:
 
     def set_parameter(self, node_name: str, param_name: str, value: Any) -> str:
         """Dynamically update a parameter on a running ROS2 node."""
-        from rcl_interfaces.msg import Parameter, ParameterValue, ParameterType
+        from rcl_interfaces.msg import Parameter, ParameterType, ParameterValue
 
         service_name = f"/{node_name}/set_parameters"
         client = self._node.create_client(SetParameters, service_name)
@@ -296,23 +299,23 @@ class MockInterface:
 
     def list_topics(self) -> List[Dict]:
         return [
-            {"topic": "/cmd_vel",       "types": ["geometry_msgs/msg/Twist"]},
-            {"topic": "/scan",          "types": ["sensor_msgs/msg/LaserScan"]},
-            {"topic": "/imu/data",      "types": ["sensor_msgs/msg/Imu"]},
+            {"topic": "/cmd_vel", "types": ["geometry_msgs/msg/Twist"]},
+            {"topic": "/scan", "types": ["sensor_msgs/msg/LaserScan"]},
+            {"topic": "/imu/data", "types": ["sensor_msgs/msg/Imu"]},
             {"topic": "/battery_state", "types": ["sensor_msgs/msg/BatteryState"]},
-            {"topic": "/odom",          "types": ["nav_msgs/msg/Odometry"]},
-            {"topic": "/map",           "types": ["nav_msgs/msg/OccupancyGrid"]},
+            {"topic": "/odom", "types": ["nav_msgs/msg/Odometry"]},
+            {"topic": "/map", "types": ["nav_msgs/msg/OccupancyGrid"]},
             {"topic": "/robot_description", "types": ["std_msgs/msg/String"]},
         ]
 
     def list_nodes(self) -> List[tuple]:
         return [
-            ("controller_manager",    "/"),
+            ("controller_manager", "/"),
             ("robot_state_publisher", "/"),
-            ("nav2_controller",       "/"),
-            ("nav2_planner",          "/"),
-            ("slam_toolbox",          "/"),
-            ("sensor_fusion_node",    "/"),
+            ("nav2_controller", "/"),
+            ("nav2_planner", "/"),
+            ("slam_toolbox", "/"),
+            ("sensor_fusion_node", "/"),
         ]
 
     def read_topic(
@@ -323,8 +326,9 @@ class MockInterface:
         latched: bool = False,
     ) -> Dict:
         import random
+
         t = time.time()
-        range_min = 0.12   # Realistic RPLiDAR A2 minimum range
+        range_min = 0.12  # Realistic RPLiDAR A2 minimum range
 
         # FIX M-06: ranges below range_min are filtered as invalid (sensor blind spot)
         def lidar_range():
@@ -336,13 +340,13 @@ class MockInterface:
 
         topic_data = {
             "/scan": {
-                "header":     {"stamp": t, "frame_id": "laser_frame"},
-                "angle_min":  -math.pi,
-                "angle_max":  math.pi,
+                "header": {"stamp": t, "frame_id": "laser_frame"},
+                "angle_min": -math.pi,
+                "angle_max": math.pi,
                 "angle_increment": round(2 * math.pi / 360, 6),
-                "range_min":  range_min,
-                "range_max":  10.0,
-                "ranges":     [lidar_range() for _ in range(360)],
+                "range_min": range_min,
+                "range_max": 10.0,
+                "ranges": [lidar_range() for _ in range(360)],
             },
             "/imu/data": {
                 "header": {"stamp": t, "frame_id": "imu_link"},
@@ -364,26 +368,26 @@ class MockInterface:
                 },
             },
             "/battery_state": {
-                "voltage":    round(random.uniform(22.0, 25.2), 2),
+                "voltage": round(random.uniform(22.0, 25.2), 2),
                 "percentage": round(random.uniform(0.35, 0.98), 3),
-                "current":    round(random.uniform(-8.5, -1.2), 2),
-                "present":    True,
+                "current": round(random.uniform(-8.5, -1.2), 2),
+                "present": True,
             },
             "/cmd_vel": {
-                "linear":  {"x": 0.0, "y": 0.0, "z": 0.0},
+                "linear": {"x": 0.0, "y": 0.0, "z": 0.0},
                 "angular": {"x": 0.0, "y": 0.0, "z": 0.0},
             },
             "/odom": {
-                "pose":  {"position": {"x": 0.0, "y": 0.0, "z": 0.0}},
+                "pose": {"position": {"x": 0.0, "y": 0.0, "z": 0.0}},
                 "twist": {"linear": {"x": 0.0}, "angular": {"z": 0.0}},
             },
         }
 
         return {
-            "topic":   topic,
-            "value":   topic_data.get(topic, {"data": f"MOCK: {topic}"}),
-            "age_ms":  round(random.uniform(1.5, 12.0), 2),
-            "mode":    "simulation",
+            "topic": topic,
+            "value": topic_data.get(topic, {"data": f"MOCK: {topic}"}),
+            "age_ms": round(random.uniform(1.5, 12.0), 2),
+            "mode": "simulation",
             "latched": latched,
         }
 
@@ -392,11 +396,11 @@ class MockInterface:
 
     def get_parameter(self, node_name: str, param_name: str) -> Dict:
         mock_params: Dict[tuple, Any] = {
-            ("controller_manager", "update_rate"):   100.0,
-            ("nav2_controller",    "max_vel_x"):     0.5,
-            ("nav2_controller",    "min_vel_x"):     -0.25,
-            ("nav2_controller",    "max_vel_theta"): 1.0,
-            ("slam_toolbox",       "resolution"):    0.05,
+            ("controller_manager", "update_rate"): 100.0,
+            ("nav2_controller", "max_vel_x"): 0.5,
+            ("nav2_controller", "min_vel_x"): -0.25,
+            ("nav2_controller", "max_vel_theta"): 1.0,
+            ("slam_toolbox", "resolution"): 0.05,
         }
         val = mock_params.get((node_name, param_name), "MOCK_VALUE")
         return {"node": node_name, "param": param_name, "value": val, "mode": "simulation"}
@@ -417,6 +421,10 @@ def create_interface() -> Any:
     Factory function: returns a live rclpy interface or a safe mock.
     The caller never needs to know which mode is active.
     """
+    import os
+    if os.environ.get("ROS2_MCP_DEMO_SIM") == "1":
+        return MockInterface()
+
     if ROS2_AVAILABLE:
         try:
             return ROS2NativeInterface()

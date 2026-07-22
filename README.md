@@ -14,6 +14,12 @@
 **The world's first Model Context Protocol server for ROS2.**  
 Give Claude, Antigravity, and any AI agent direct, sandboxed access to live robots.
 
+<div align="center">
+  <img width="800" src="docs/assets/demo.gif" alt="Claude tuning PID values on a live robot" />
+  <br/><i>Watch Claude instantly tune a robot's PID controller via MCP.</i>
+</div>
+<br/>
+
 [📖 Docs](#-how-it-works) · [⚡ Quick Start](#-quick-start-60-seconds) · [🛠️ Tools](#%EF%B8%8F-available-mcp-tools) · [🔒 Safety](#-safety--sandbox) · [💬 Community](#-community)
 
 </div>
@@ -40,44 +46,25 @@ No copy-pasting sensor dumps. No manual parameter editing. Just natural language
 
 ## ⚡ Quick Start (60 Seconds)
 
-### 1. Install
+### 1. Frictionless Install
+
+Run our zero-config installer. It installs the package and automatically injects the configuration into Claude Desktop and Antigravity:
 
 ```bash
-pip install ros2-mcp-server
+curl -sSL https://raw.githubusercontent.com/EngineerAbdullahBinZafar/ros2-mcp-server/main/install.sh | bash
 ```
 
-> **No ROS2 installed?** The server automatically falls back to **simulation mode** — generating realistic synthetic sensor data for development and testing.
+> **Manual Installation:** If you prefer manual setup, run `pip install ros2-mcp-server` and add the config to your MCP client manually.
 
-### 2. Configure Your AI Client
+### 2. The Instant Playground (Simulation Mode)
 
-**Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
-```json
-{
-  "mcpServers": {
-    "ros2": {
-      "command": "ros2-mcp-server",
-      "env": {
-        "SAFETY_LEVEL": "safe_write"
-      }
-    }
-  }
-}
-```
+Don't have a ROS2 robot sitting next to your laptop? No problem.
+Spin up our built-in virtual robot to test the server instantly:
 
-**Antigravity IDE** (`.gemini/config/mcp_servers.json`):
-```json
-{
-  "ros2": {
-    "command": "ros2-mcp-server",
-    "env": { "SAFETY_LEVEL": "safe_write" }
-  }
-}
-```
-
-**OpenAI Agents SDK** / **Any MCP Client**:
 ```bash
-SAFETY_LEVEL=safe_write ros2-mcp-server
+ros2-mcp-server --demo-sim
 ```
+*(This forces a realistic mock data stream of LiDAR, IMU, and Battery topics.)*
 
 ### 3. Talk to Your Robot
 

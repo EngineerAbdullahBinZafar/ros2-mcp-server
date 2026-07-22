@@ -19,21 +19,28 @@ Compatible clients:
 """
 
 from __future__ import annotations
-import sys
-import os
+
 import json
+import os
 import signal
+import sys
 import traceback
 from typing import Any, Callable, Dict, Optional
 
 from .ros2_interface import create_interface
 from .sandbox import CommandSandbox, SafetyLevel
 from .tools import (
-    handle_list_topics, handle_read_topic, handle_publish_topic, handle_get_robot_snapshot,
-    handle_list_nodes, handle_get_node_info,
-    handle_get_parameter, handle_set_parameter,
-    handle_get_pid_state, handle_tune_pid,
+    handle_get_node_info,
+    handle_get_parameter,
+    handle_get_pid_state,
+    handle_get_robot_snapshot,
+    handle_list_nodes,
+    handle_list_topics,
+    handle_publish_topic,
+    handle_read_topic,
+    handle_set_parameter,
     handle_system_diagnostics,
+    handle_tune_pid,
 )
 
 VERSION = "1.1.0"
@@ -75,10 +82,22 @@ TOOL_SCHEMAS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "topic":      {"type": "string",  "description": "Topic name, e.g. '/scan'"},
-                "msg_type":   {"type": "string",  "description": "ROS2 message type, e.g. 'sensor_msgs/LaserScan'", "default": "std_msgs/String"},
-                "timeout_ms": {"type": "integer", "description": "Max wait time in milliseconds", "default": 3000},
-                "latched":    {"type": "boolean", "description": "Set true for topics published once on connect (/map, /robot_description)", "default": False},
+                "topic": {"type": "string", "description": "Topic name, e.g. '/scan'"},
+                "msg_type": {
+                    "type": "string",
+                    "description": "ROS2 message type, e.g. 'sensor_msgs/LaserScan'",
+                    "default": "std_msgs/String",
+                },
+                "timeout_ms": {
+                    "type": "integer",
+                    "description": "Max wait time in milliseconds",
+                    "default": 3000,
+                },
+                "latched": {
+                    "type": "boolean",
+                    "description": "Set true for topics published once on connect (/map, /robot_description)",
+                    "default": False,
+                },
             },
             "required": ["topic"],
         },
@@ -92,9 +111,12 @@ TOOL_SCHEMAS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "topic":    {"type": "string", "description": "Topic name, e.g. '/cmd_vel'"},
-                "msg_type": {"type": "string", "description": "Message type, e.g. 'geometry_msgs/Twist'"},
-                "payload":  {"type": "object", "description": "Message fields as key-value pairs"},
+                "topic": {"type": "string", "description": "Topic name, e.g. '/cmd_vel'"},
+                "msg_type": {
+                    "type": "string",
+                    "description": "Message type, e.g. 'geometry_msgs/Twist'",
+                },
+                "payload": {"type": "object", "description": "Message fields as key-value pairs"},
             },
             "required": ["topic", "msg_type", "payload"],
         },
@@ -129,7 +151,7 @@ TOOL_SCHEMAS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "node_name":  {"type": "string"},
+                "node_name": {"type": "string"},
                 "param_name": {"type": "string"},
             },
             "required": ["node_name", "param_name"],
@@ -144,9 +166,9 @@ TOOL_SCHEMAS = [
         "inputSchema": {
             "type": "object",
             "properties": {
-                "node_name":  {"type": "string"},
+                "node_name": {"type": "string"},
                 "param_name": {"type": "string"},
-                "value":      {"description": "New value — float, int, string, or bool"},
+                "value": {"description": "New value — float, int, string, or bool"},
             },
             "required": ["node_name", "param_name", "value"],
         },
@@ -158,9 +180,9 @@ TOOL_SCHEMAS = [
             "type": "object",
             "properties": {
                 "node_name": {"type": "string"},
-                "kp_param":  {"type": "string", "default": "kp"},
-                "ki_param":  {"type": "string", "default": "ki"},
-                "kd_param":  {"type": "string", "default": "kd"},
+                "kp_param": {"type": "string", "default": "kp"},
+                "ki_param": {"type": "string", "default": "ki"},
+                "kd_param": {"type": "string", "default": "kd"},
             },
             "required": ["node_name"],
         },
@@ -176,12 +198,12 @@ TOOL_SCHEMAS = [
             "type": "object",
             "properties": {
                 "node_name": {"type": "string"},
-                "kp":        {"type": "number", "description": "New proportional gain (must be >= 0)"},
-                "ki":        {"type": "number", "description": "New integral gain (must be >= 0)"},
-                "kd":        {"type": "number", "description": "New derivative gain (must be >= 0)"},
-                "kp_param":  {"type": "string", "default": "kp"},
-                "ki_param":  {"type": "string", "default": "ki"},
-                "kd_param":  {"type": "string", "default": "kd"},
+                "kp": {"type": "number", "description": "New proportional gain (must be >= 0)"},
+                "ki": {"type": "number", "description": "New integral gain (must be >= 0)"},
+                "kd": {"type": "number", "description": "New derivative gain (must be >= 0)"},
+                "kp_param": {"type": "string", "default": "kp"},
+                "ki_param": {"type": "string", "default": "ki"},
+                "kd_param": {"type": "string", "default": "kd"},
             },
             "required": ["node_name"],
         },
@@ -191,6 +213,7 @@ TOOL_SCHEMAS = [
 
 # ── Dispatch table ───────────────────────────────────────────────────────────
 
+
 def _build_dispatch(ros2: Any, sandbox: Any) -> Dict[str, Callable]:
     """
     Build a tool-name → handler mapping.
@@ -198,14 +221,12 @@ def _build_dispatch(ros2: Any, sandbox: Any) -> Dict[str, Callable]:
     """
     return {
         "ping": lambda _: ros2.ping(),
-
         "system_diagnostics": lambda _: handle_system_diagnostics(ros2),
-
-        "list_topics":  lambda _: handle_list_topics(ros2),
-        "list_nodes":   lambda _: handle_list_nodes(ros2),
-
+        "list_topics": lambda _: handle_list_topics(ros2),
+        "list_nodes": lambda _: handle_list_nodes(ros2),
         "read_topic": lambda a: handle_read_topic(
-            ros2, a["topic"],
+            ros2,
+            a["topic"],
             a.get("msg_type", "std_msgs/String"),
             a.get("timeout_ms", 3000),
             a.get("latched", False),
@@ -214,23 +235,25 @@ def _build_dispatch(ros2: Any, sandbox: Any) -> Dict[str, Callable]:
             ros2, sandbox, a["topic"], a["msg_type"], a["payload"]
         ),
         "get_robot_snapshot": lambda _: handle_get_robot_snapshot(ros2),
-
-        "get_node_info":  lambda a: handle_get_node_info(ros2, a["node_name"]),
-
-        "get_parameter":  lambda a: handle_get_parameter(ros2, a["node_name"], a["param_name"]),
-        "set_parameter":  lambda a: handle_set_parameter(
+        "get_node_info": lambda a: handle_get_node_info(ros2, a["node_name"]),
+        "get_parameter": lambda a: handle_get_parameter(ros2, a["node_name"], a["param_name"]),
+        "set_parameter": lambda a: handle_set_parameter(
             ros2, sandbox, a["node_name"], a["param_name"], a["value"]
         ),
-
         "get_pid_state": lambda a: handle_get_pid_state(
-            ros2, a["node_name"],
+            ros2,
+            a["node_name"],
             a.get("kp_param", "kp"),
             a.get("ki_param", "ki"),
             a.get("kd_param", "kd"),
         ),
         "tune_pid": lambda a: handle_tune_pid(
-            ros2, sandbox, a["node_name"],
-            a.get("kp"), a.get("ki"), a.get("kd"),
+            ros2,
+            sandbox,
+            a["node_name"],
+            a.get("kp"),
+            a.get("ki"),
+            a.get("kd"),
             a.get("kp_param", "kp"),
             a.get("ki_param", "ki"),
             a.get("kd_param", "kd"),
@@ -239,6 +262,7 @@ def _build_dispatch(ros2: Any, sandbox: Any) -> Dict[str, Callable]:
 
 
 # ── Server class ─────────────────────────────────────────────────────────────
+
 
 class ROS2MCPServer:
     def __init__(self) -> None:
@@ -249,15 +273,22 @@ class ROS2MCPServer:
             safety_level = SafetyLevel.SAFE_WRITE
             self._log(f"Unknown SAFETY_LEVEL='{safety_str}', defaulting to safe_write")
 
-        self.ros2    = create_interface()
+        self.ros2 = create_interface()
         self.sandbox = CommandSandbox(level=safety_level)
         self._dispatch = _build_dispatch(self.ros2, self.sandbox)
 
         # FIX M-02: Graceful shutdown on SIGTERM/SIGINT
         signal.signal(signal.SIGTERM, self._handle_signal)
-        signal.signal(signal.SIGINT,  self._handle_signal)
+        signal.signal(signal.SIGINT, self._handle_signal)
 
-        self._log(f"ROS2 MCP Server v{VERSION} | Safety: {safety_level.value} | Tools: {len(self._dispatch)}")
+        self._log(
+            f"ROS2 MCP Server v{VERSION} | Safety: {safety_level.value} | Tools: {len(self._dispatch)}"
+        )
+        if os.environ.get("ROS2_MCP_DEMO_SIM") == "1":
+            self._log("=====================================================")
+            self._log("🤖 DEMO SIMULATION MODE ACTIVE")
+            self._log("Spinning up virtual robot playground...")
+            self._log("=====================================================")
 
     def _handle_signal(self, signum: int, frame: Any) -> None:
         """Gracefully shut down when killed by Docker / systemd / Ctrl-C."""
@@ -291,7 +322,7 @@ class ROS2MCPServer:
                 "result": {
                     "protocolVersion": "2024-11-05",
                     "serverInfo": {
-                        "name":    "ros2-mcp-server",
+                        "name": "ros2-mcp-server",
                         "version": VERSION,
                     },
                     "capabilities": {
@@ -375,6 +406,8 @@ class ROS2MCPServer:
 
 
 def main() -> None:
+    if "--demo-sim" in sys.argv:
+        os.environ["ROS2_MCP_DEMO_SIM"] = "1"
     server = ROS2MCPServer()
     server.run()
 
