@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="ros2-mcp-server",
-    version="1.0.0",
+    version="1.1.0",
     author="Abdullah Bin Zafar",
     author_email="abz.king.1.9.2003@gmail.com",
     description="Model Context Protocol (MCP) server for ROS2 — connect Claude, Antigravity, and AI agents to real robots",
@@ -11,9 +11,7 @@ setup(
     url="https://github.com/EngineerAbdullahBinZafar/ros2-mcp-server",
     packages=find_packages(),
     python_requires=">=3.10",
-    install_requires=[
-        "pyserial>=3.5",
-    ],
+    install_requires=[],
     extras_require={
         "rosbridge": ["websocket-client>=1.6.0"],
         "dev": ["pytest>=7.0", "pytest-cov"],
