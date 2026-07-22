@@ -1,0 +1,51 @@
+from setuptools import setup, find_packages
+
+setup(
+    name="ros2-mcp-server",
+    version="1.0.0",
+    author="Abdullah Bin Zafar",
+    author_email="abz.king.1.9.2003@gmail.com",
+    description="Model Context Protocol (MCP) server for ROS2 — connect Claude, Antigravity, and AI agents to real robots",
+    long_description=open("README.md", encoding="utf-8").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/EngineerAbdullahBinZafar/ros2-mcp-server",
+    packages=find_packages(),
+    python_requires=">=3.10",
+    install_requires=[
+        "pyserial>=3.5",
+    ],
+    extras_require={
+        "rosbridge": ["websocket-client>=1.6.0"],
+        "dev": ["pytest>=7.0", "pytest-cov"],
+    },
+    entry_points={
+        "console_scripts": [
+            "ros2-mcp-server = ros2_mcp.server:main",
+        ],
+    },
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "Topic :: Software Development :: Libraries :: Application Frameworks",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: MacOS",
+    ],
+    keywords=[
+        "ros2", "mcp", "model-context-protocol", "claude", "ai-agents",
+        "robotics", "autonomous-systems", "embedded-systems", "llm",
+        "antigravity", "openai", "pid-tuning", "sensor-fusion"
+    ],
+    project_urls={
+        "Bug Tracker": "https://github.com/EngineerAbdullahBinZafar/ros2-mcp-server/issues",
+        "Documentation": "https://github.com/EngineerAbdullahBinZafar/ros2-mcp-server#readme",
+        "Source Code": "https://github.com/EngineerAbdullahBinZafar/ros2-mcp-server",
+    },
+)
