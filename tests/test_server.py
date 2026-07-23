@@ -457,3 +457,51 @@ def test_server_notification_returns_none():
         }
     )
     assert response is None
+
+
+# ── WORLD-FIRST INNOVATION TESTS ──────────────────────────────────────────────
+
+
+def test_predict_trajectory():
+    from ros2_mcp.tools.trajectory import handle_predict_trajectory
+
+    result = handle_predict_trajectory(linear_x=0.5, angular_z=0.1, dt_sec=2.0)
+    assert result["status"] == "success"
+    assert "predicted_final_pose" in result
+    assert "safety_assessment" in result
+    assert len(result["sampled_waypoints"]) > 0
+
+
+def test_predictive_safety_check():
+    from ros2_mcp.tools.trajectory import handle_predictive_safety_check
+
+    # Unsafe PID gain -> auto-corrected
+    result = handle_predictive_safety_check("tune_pid", "nav2_controller", -10.0)
+    assert result["auto_corrected"] is True
+    assert result["evaluated_safe_value"] == 0.0
+
+    # Safe PID gain -> unchanged
+    result2 = handle_predictive_safety_check("tune_pid", "nav2_controller", 5.0)
+    assert result2["auto_corrected"] is False
+    assert result2["evaluated_safe_value"] == 5.0
+
+
+def test_get_spatial_map():
+    from ros2_mcp.tools.spatial import handle_get_spatial_map
+
+    iface = MockInterface()
+    result = handle_get_spatial_map(iface)
+    assert result["status"] == "success"
+    assert "spatial_grid_ascii" in result
+    assert "R" in result["spatial_grid_ascii"]  # Robot center
+    assert "obstacle_summary" in result
+
+
+def test_swarm_fleet_status():
+    from ros2_mcp.tools.swarm import handle_swarm_fleet_status
+
+    iface = MockInterface()
+    result = handle_swarm_fleet_status(iface)
+    assert result["status"] == "success"
+    assert "total_active_fleet_members" in result
+    assert "fleet_overview" in result

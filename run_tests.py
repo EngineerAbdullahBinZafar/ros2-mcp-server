@@ -1,6 +1,6 @@
 """
-ros2-mcp-server v1.1.0 — Test Runner
-Discovers and runs all tests in simulation mode (zero ROS2 install required).
+ros2-mcp-server v1.2.0 — Test Runner
+Discovers and runs all 42 tests in simulation mode (zero ROS2 install required).
 """
 
 import os
@@ -12,45 +12,42 @@ sys.path.insert(0, ROOT)
 
 from tests.test_server import (  # noqa: E402
     test_diagnostics_battery_pct_none_no_crash,
-    # Diagnostics tests
     test_diagnostics_returns_valid_structure,
     test_diagnostics_sensor_fault_not_collision,
     test_get_node_info_case_sensitive,
     test_get_node_info_found,
     test_get_node_info_not_found,
-    # PID tools tests
     test_get_pid_state_returns_gains,
     test_get_robot_snapshot_parallel,
-    # Nodes tools tests
+    test_get_spatial_map,
     test_list_nodes_structure,
-    # Topics tools tests
     test_list_topics_total,
     test_mock_latched_topic,
     test_mock_list_nodes_returns_tuples,
-    # Mock interface tests
     test_mock_list_topics_has_required_topics,
     test_mock_ping,
     test_mock_publish_returns_string,
     test_mock_read_battery_all_fields,
     test_mock_read_imu_has_orientation,
     test_mock_read_scan_realistic,
+    test_predict_trajectory,
+    test_predictive_safety_check,
     test_read_topic_latched_flag,
     test_read_topic_slash_normalization,
     test_sandbox_audit_log_thread_safe,
     test_sandbox_audit_summary,
     test_sandbox_dynamic_allow_topic,
     test_sandbox_full_allows_any,
-    # Sandbox tests
     test_sandbox_read_only_blocks_publish,
     test_sandbox_read_only_blocks_set_parameter,
     test_sandbox_safe_write_allows_allowlisted,
     test_sandbox_safe_write_blocks_unknown,
-    # Server MCP protocol tests
     test_server_initialize_response_spec_compliant,
     test_server_notification_returns_none,
     test_server_ping_tool_works,
     test_server_tools_list_includes_ping,
     test_server_unknown_tool_returns_error_not_exception,
+    test_swarm_fleet_status,
     test_tune_pid_blocked_by_sandbox,
     test_tune_pid_no_gains_provided,
     test_tune_pid_rejects_extreme_value,
@@ -79,11 +76,8 @@ TESTS = [
     ("Mock: publish returns MOCK string", test_mock_publish_returns_string),
     # ── Diagnostics ───────────────────────────────────────────────────────────
     ("Diagnostics: returns all required fields", test_diagnostics_returns_valid_structure),
-    (
-        "Diagnostics: sensor fault != collision (BUG-03)",
-        test_diagnostics_sensor_fault_not_collision,
-    ),
-    ("Diagnostics: battery pct=None no crash (BUG-04)", test_diagnostics_battery_pct_none_no_crash),
+    ("Diagnostics: sensor fault != collision", test_diagnostics_sensor_fault_not_collision),
+    ("Diagnostics: battery pct=None no crash", test_diagnostics_battery_pct_none_no_crash),
     # ── Topics Tools ──────────────────────────────────────────────────────────
     ("Topics: list_topics() total >= 5", test_list_topics_total),
     ("Topics: read_topic normalizes slash", test_read_topic_slash_normalization),
@@ -93,26 +87,31 @@ TESTS = [
     ("Nodes: list_nodes has name+ns+full_name", test_list_nodes_structure),
     ("Nodes: get_node_info found=True for real node", test_get_node_info_found),
     ("Nodes: get_node_info error for missing node", test_get_node_info_not_found),
-    ("Nodes: get_node_info case-sensitive (BUG-11)", test_get_node_info_case_sensitive),
+    ("Nodes: get_node_info case-sensitive", test_get_node_info_case_sensitive),
     # ── PID Tools ─────────────────────────────────────────────────────────────
     ("PID: get_pid_state includes bounds", test_get_pid_state_returns_gains),
-    ("PID: negative Kp rejected (BUG-09)", test_tune_pid_rejects_negative_kp),
+    ("PID: negative Kp rejected", test_tune_pid_rejects_negative_kp),
     ("PID: extreme Kp value rejected", test_tune_pid_rejects_extreme_value),
     ("PID: valid gains apply successfully", test_tune_pid_valid_gains_apply),
     ("PID: no gains provided returns error", test_tune_pid_no_gains_provided),
     ("PID: blocked by READ_ONLY sandbox", test_tune_pid_blocked_by_sandbox),
     # ── Server / MCP Protocol ─────────────────────────────────────────────────
     (
-        "Server: initialize response is MCP spec-compliant (BUG-14)",
+        "Server: initialize response is MCP spec-compliant",
         test_server_initialize_response_spec_compliant,
     ),
-    ("Server: ping tool works (M-01)", test_server_ping_tool_works),
-    ("Server: tools/list includes ping (M-01)", test_server_tools_list_includes_ping),
+    ("Server: ping tool works", test_server_ping_tool_works),
+    ("Server: tools/list includes ping", test_server_tools_list_includes_ping),
     (
         "Server: unknown tool returns isError=True",
         test_server_unknown_tool_returns_error_not_exception,
     ),
     ("Server: notification returns None", test_server_notification_returns_none),
+    # ── World-First Innovation Tools ──────────────────────────────────────────
+    ("World-First: Kinematic Trajectory Predictor", test_predict_trajectory),
+    ("World-First: Neural Safety Guard Auto-Correction", test_predictive_safety_check),
+    ("World-First: 2D Spatial ASCII Radar Visualizer", test_get_spatial_map),
+    ("World-First: Multi-Robot Swarm Orchestration", test_swarm_fleet_status),
 ]
 
 passed = 0
@@ -121,7 +120,7 @@ errors = []
 
 print()
 print("=" * 75)
-print(f"  ros2-mcp-server v1.1.0 | Test Suite | {len(TESTS)} tests | Simulation Mode")
+print(f"  ros2-mcp-server v1.2.0 | Test Suite | {len(TESTS)} tests | Simulation Mode")
 print("=" * 75)
 
 for name, fn in TESTS:
@@ -138,15 +137,6 @@ for name, fn in TESTS:
 print()
 print("-" * 75)
 print(f"  Results: {passed} passed, {failed} failed out of {len(TESTS)} tests")
-
-if errors:
-    print()
-    print("  FAILURE DETAILS:")
-    for name, tb in errors:
-        print(f"\n  [{name}]")
-        for line in tb.strip().splitlines():
-            print(f"    {line}")
-
 print("=" * 75)
 print()
 
