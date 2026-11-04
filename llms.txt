@@ -1,0 +1,22 @@
+# ROS 2 MCP Server
+
+> Universal Physical AI Coprocessor and Model Context Protocol (MCP) gateway connecting 1,000+ AI models to ROS 2 robots with 3-tier execution sandboxing, fast-forward kinematic trajectory prediction, and 2D spatial LiDAR ASCII radar.
+
+## Documentation
+- [Comprehensive Overview](README.md): Architecture, supported AI clients (Claude Desktop, Cursor, Antigravity), and 60-second quickstart.
+- [Architecture Blueprint](ARCHITECTURE.md): JSON-RPC stdio transport, thread-safe message queues, and rclpy daemon integration.
+- [System Diagnostics](README.md#system-diagnostic-check-doctor): Built-in CLI doctor diagnostics and environment verification.
+
+## Architecture & Key Concepts
+- [3-Tier Execution Sandbox](README.md#3-tier-execution-sandbox-guardrails): READ_ONLY, SAFE_WRITE, and FULL execution guardrails with mutex-guarded audit logging.
+- [Kinematic Trajectory Predictor](README.md#world-first-unimagined-innovations): 1000Hz fast-forward kinematic forward simulation (<0.1ms compute).
+- [Spatial ASCII Radar](README.md#world-first-unimagined-innovations): 360-degree LiDAR pointcloud translation to 2D text-based spatial grid.
+- [Predictive Neural Safety](README.md#world-first-unimagined-innovations): Real-time parameter clamping with Routh-Hurwitz stability proof.
+
+## Tools & APIs
+- [Tool Reference](README.md#complete-16-tool-catalog): 16 standard MCP tools spanning topics, parameters, PID tuning, trajectory simulation, and swarm coordination.
+
+## Optional
+- [Performance Benchmarking](docs/BENCHMARKS.md): Sub-millisecond latency (<0.08ms) and O(1) tool dispatch benchmarks.
+- [Client Integration Setup](docs/WORLD_FIRST_FEATURES.md): Configurations for Claude Desktop, Cursor IDE, Windsurf, and Antigravity IDE.
+- [Automated Verification Suite](tests/): 42-test simulation-mode test suite verifying protocol and sandbox invariants.
