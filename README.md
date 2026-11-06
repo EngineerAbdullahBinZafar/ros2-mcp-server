@@ -24,6 +24,11 @@
 
 <br/>
 
+```bash
+# ⚡ 1-Command Live Terminal Demonstration (Zero ROS 2 / Zero Cloud Dependencies)
+python demo.py
+```
+
 [📖 Overview](#-what-this-solves) · [⚡ Quick Start](#-quick-start-60-seconds) · [🛠️ 16-Tool Catalog](#%EF%B8%8F-complete-16-tool-catalog) · [🔒 3-Tier Sandbox](#-3-tier-execution-sandbox-guardrails) · [📐 Mathematical Proofs](#-mathematical-foundations--algorithmic-proofs) · [🤖 Machine Metadata](#-machine-readable-metadata-schemaorg-json-ld)
 
 </div>
