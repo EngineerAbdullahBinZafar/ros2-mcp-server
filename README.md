@@ -201,10 +201,10 @@ Every tool is exposed through a strict JSON schema with typed properties and req
 | 10 | `set_parameter` | Parameters | Dynamically update parameter on node | `node_name` (str, req)<br/>`param_name` (str, req)<br/>`value` (any, req) | `status: "ok"`, `node`, `param`, `value` | **Blocked in `READ_ONLY`**<br/>Allowlist in `SAFE_WRITE`<br/>Unrestricted in `FULL` |
 | 11 | `get_pid_state` | Control | Read Kp, Ki, Kd gains and safety bounds | `node_name` (str, req)<br/>`kp_param` (str, default: `"kp"`)<br/>`ki_param` (str, default: `"ki"`)<br/>`kd_param` (str, default: `"kd"`) | `node`, `gains: {Kp, Ki, Kd}`, `bounds` | `READ_ONLY`<br/>`SAFE_WRITE`<br/>`FULL` |
 | 12 | `tune_pid` | Control | Validated PID tuning with physics bounds check | `node_name` (str, req)<br/>`kp`, `ki`, `kd` (float, opt)<br/>param name keys (opt) | `status: "ok"\|"validation_error"`, `applied`, `guidance` | **Blocked in `READ_ONLY`**<br/>Allowlist in `SAFE_WRITE`<br/>Unrestricted in `FULL` |
-| 13 | `predict_trajectory` | **World-First Innovation** | 1000Hz fast-forward kinematic trajectory simulation | `linear_x` (float, req)<br/>`angular_z` (float, req)<br/>`dt_sec` (float, default: 3.0) | `predicted_final_pose`, `safety_assessment`, `sampled_waypoints` | `READ_ONLY`<br/>`SAFE_WRITE`<br/>`FULL` |
-| 14 | `predictive_safety_check` | **World-First Innovation** | Auto-corrects unsafe LLM inputs & gives mathematical proof | `command_type` (str, req)<br/>`target` (str, req)<br/>`proposed_value` (any, req) | `evaluated_safe_value`, `auto_corrected`, `control_theory_proof` | `READ_ONLY`<br/>`SAFE_WRITE`<br/>`FULL` |
-| 15 | `get_spatial_map` | **World-First Innovation** | Translates 360° LiDAR to 2D ASCII radar grid | `scan_topic` (str, default: `"/scan"`)<br/>`grid_size` (int, default: 13)<br/>`max_range_m` (float, default: 3.5) | `spatial_grid_ascii`, `obstacle_summary`, `spatial_recommendation` | `READ_ONLY`<br/>`SAFE_WRITE`<br/>`FULL` |
-| 16 | `swarm_fleet_status` | **World-First Innovation** | Multi-namespace ROS 2 swarm fleet coordinator | `{}` | `total_active_fleet_members`, `fleet_overview`, `namespaces` | `READ_ONLY`<br/>`SAFE_WRITE`<br/>`FULL` |
+| 13 | `predict_trajectory` | **Predictive Simulation** | 1000Hz fast-forward kinematic trajectory simulation | `linear_x` (float, req)<br/>`angular_z` (float, req)<br/>`dt_sec` (float, default: 3.0) | `predicted_final_pose`, `safety_assessment`, `sampled_waypoints` | `READ_ONLY`<br/>`SAFE_WRITE`<br/>`FULL` |
+| 14 | `predictive_safety_check` | **Verification Tool** | Auto-corrects unsafe LLM inputs & gives mathematical proof | `command_type` (str, req)<br/>`target` (str, req)<br/>`proposed_value` (any, req) | `evaluated_safe_value`, `auto_corrected`, `control_theory_proof` | `READ_ONLY`<br/>`SAFE_WRITE`<br/>`FULL` |
+| 15 | `get_spatial_map` | **Spatial Perception** | Translates 360° LiDAR to 2D ASCII radar grid | `scan_topic` (str, default: `"/scan"`)<br/>`grid_size` (int, default: 13)<br/>`max_range_m` (float, default: 3.5) | `spatial_grid_ascii`, `obstacle_summary`, `spatial_recommendation` | `READ_ONLY`<br/>`SAFE_WRITE`<br/>`FULL` |
+| 16 | `swarm_fleet_status` | **Fleet Coordinator** | Multi-namespace ROS 2 swarm fleet coordinator | `{}` | `total_active_fleet_members`, `fleet_overview`, `namespaces` | `READ_ONLY`<br/>`SAFE_WRITE`<br/>`FULL` |
 
 ---
 
@@ -225,7 +225,7 @@ print(sandbox.get_audit_log())
 
 ---
 
-## 🌟 World-First Unimagined Innovations
+## 🛠️ Predictive Simulation & Safety Verification Architecture
 
 ### 1. 🔮 Kinematic Trajectory Predictor (`predict_trajectory`)
 Runs a 1000Hz fast-forward kinematic physics simulation ($<0.1\,\text{ms}$ compute) before any motion command reaches hardware. Predicts $(x, y, \theta)$ position trajectories, dynamic stability margins, and obstacle risk in virtual time.
@@ -414,74 +414,12 @@ python run_tests.py
 
 - [🌐 Client Integration Setup (15+ Clients)](docs/CLIENT_SETUP.md)
 - [⚡ Performance & Latency Benchmarks](docs/BENCHMARKS.md)
-- [🌟 World-First Feature Architecture](docs/WORLD_FIRST_FEATURES.md)
+- [🛠️ Predictive Safety Architecture](docs/PREDICTIVE_SAFETY_ARCHITECTURE.md)
 - [🔒 Security & Threat Model Policy](SECURITY.md)
 - [🏗️ System Architecture Deep Dive](ARCHITECTURE.md)
 - [🤝 Contribution Guide](CONTRIBUTING.md)
 
 ---
-
-<details>
-<summary>🤖 <b>Machine-Readable Metadata (Schema.org JSON-LD)</b></summary>
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": ["SoftwareApplication", "SoftwareSourceCode"],
-  "name": "ros2-mcp-server",
-  "alternateName": [
-    "ROS 2 Model Context Protocol Server",
-    "Universal Physical AI Coprocessor for ROS 2",
-    "ros2-mcp"
-  ],
-  "description": "Universal Physical AI Coprocessor and Model Context Protocol (MCP) gateway connecting 1,000+ AI models to ROS 2 robots with 16 tools, 3-tier sandboxing, kinematic trajectory prediction, and 2D spatial ASCII radar.",
-  "applicationCategory": "DeveloperApplication",
-  "operatingSystem": "Linux, ROS 2 (Humble, Iron, Jazzy), Windows, macOS",
-  "programmingLanguage": {
-    "@type": "ComputerLanguage",
-    "name": "Python",
-    "version": "3.10+"
-  },
-  "codeRepository": "https://github.com/EngineerAbdullahBinZafar/ros2-mcp-server",
-  "license": "https://opensource.org/licenses/MIT",
-  "version": "1.2.0",
-  "author": {
-    "@type": "Person",
-    "name": "Abdullah Bin Zafar",
-    "alternateName": "EngineerAbdullahBinZafar",
-    "jobTitle": "Mechatronics & Control Systems Engineer",
-    "url": "https://github.com/EngineerAbdullahBinZafar",
-    "sameAs": [
-      "https://linkedin.com/in/abdullah-bin-zafar",
-      "https://thequietwealthjournal.vercel.app"
-    ]
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": "0.00",
-    "priceCurrency": "USD"
-  },
-  "keywords": [
-    "ros2",
-    "mcp",
-    "model-context-protocol",
-    "mcp-server",
-    "robotics",
-    "embodied-ai",
-    "ai-coprocessor",
-    "claude-desktop",
-    "antigravity",
-    "trajectory-prediction",
-    "spatial-radar",
-    "swarm-robotics",
-    "safety-sandbox",
-    "control-theory",
-    "zero-dependencies"
-  ]
-}
-```
-
-</details>
 
 ---
 

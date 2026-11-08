@@ -108,10 +108,10 @@ TESTS = [
     ),
     ("Server: notification returns None", test_server_notification_returns_none),
     # ── World-First Innovation Tools ──────────────────────────────────────────
-    ("World-First: Kinematic Trajectory Predictor", test_predict_trajectory),
-    ("World-First: Neural Safety Guard Auto-Correction", test_predictive_safety_check),
-    ("World-First: 2D Spatial ASCII Radar Visualizer", test_get_spatial_map),
-    ("World-First: Multi-Robot Swarm Orchestration", test_swarm_fleet_status),
+    ("Predictive: Kinematic Trajectory Predictor", test_predict_trajectory),
+    ("Predictive: Neural Safety Guard Auto-Correction", test_predictive_safety_check),
+    ("Perception: 2D Spatial ASCII Radar Visualizer", test_get_spatial_map),
+    ("Swarm: Multi-Robot Swarm Orchestration", test_swarm_fleet_status),
 ]
 
 passed = 0

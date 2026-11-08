@@ -459,7 +459,7 @@ def test_server_notification_returns_none():
     assert response is None
 
 
-# ── WORLD-FIRST INNOVATION TESTS ──────────────────────────────────────────────
+# ── PREDICTIVE SAFETY & PERCEPTION TESTS ──────────────────────────────────────────────
 
 
 def test_predict_trajectory():
