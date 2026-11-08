@@ -1,5 +1,9 @@
 <div align="center">
 
+<p align="center">
+  <img src="assets/banner.png" alt="ros2-mcp-server — Model Context Protocol Server Connecting LLMs Directly to Live ROS 2 Nodes and Topics" width="100%" />
+</p>
+
 <img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=0:0d1117,50:00d4ff,100:0055ff&height=220&section=header&text=ros2-mcp-server&fontSize=52&fontColor=ffffff&fontAlignY=45&desc=Universal%20Physical%20AI%20Coprocessor%20%26%20Model%20Context%20Protocol%20Gateway&descSize=18&descAlignY=68&descColor=c9d1d9&animation=fadeIn" alt="ros2-mcp-server header banner" />
 
 <br/>
@@ -38,14 +42,14 @@ python demo.py
 ## 🌐 Supported AI Clients & Frameworks
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Claude_Desktop-000000?style=for-the-badge&logo=anthropic&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Cursor_IDE-0055FF?style=for-the-badge&logo=cursor&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Windsurf-00D4FF?style=for-the-badge&logo=windsurf&logoColor=black"/>
-  <img src="https://img.shields.io/badge/Antigravity_IDE-7A00FF?style=for-the-badge&logo=google&logoColor=white"/>
-  <img src="https://img.shields.io/badge/Roo_Code-181717?style=for-the-badge&logo=github&logoColor=white"/>
-  <img src="https://img.shields.io/badge/OpenAI_SDK-412991?style=for-the-badge&logo=openai&logoColor=white"/>
-  <img src="https://img.shields.io/badge/LangChain-121011?style=for-the-badge&logo=python&logoColor=white"/>
-  <img src="https://img.shields.io/badge/LlamaIndex-00A67E?style=for-the-badge&logo=meta&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Claude_Desktop-000000?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude Desktop Model Context Protocol Client Integration for ROS 2"/>
+  <img src="https://img.shields.io/badge/Cursor_IDE-0055FF?style=for-the-badge&logo=cursor&logoColor=white" alt="Cursor IDE AI Assistant MCP Integration for ROS 2 Robotics Development"/>
+  <img src="https://img.shields.io/badge/Windsurf-00D4FF?style=for-the-badge&logo=windsurf&logoColor=black" alt="Windsurf Cascade AI Coding Assistant MCP Integration for ROS 2"/>
+  <img src="https://img.shields.io/badge/Antigravity_IDE-7A00FF?style=for-the-badge&logo=google&logoColor=white" alt="Antigravity IDE Native Robotics Plugin and 3-Tier Sandbox Integration"/>
+  <img src="https://img.shields.io/badge/Roo_Code-181717?style=for-the-badge&logo=github&logoColor=white" alt="Roo Code Autonomous Agent MCP Middleware Integration for ROS 2"/>
+  <img src="https://img.shields.io/badge/OpenAI_SDK-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI SDK Python Function Calling Bridge for ROS 2 Topics and Services"/>
+  <img src="https://img.shields.io/badge/LangChain-121011?style=for-the-badge&logo=python&logoColor=white" alt="LangChain Robotics Agent Tool Ecosystem for ROS 2 Integration"/>
+  <img src="https://img.shields.io/badge/LlamaIndex-00A67E?style=for-the-badge&logo=meta&logoColor=white" alt="LlamaIndex Autonomous Agent Retrieval and Actuator Control for ROS 2"/>
 </p>
 
 ---
