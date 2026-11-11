@@ -9,14 +9,14 @@
 
 ## Architecture & Key Concepts
 - [3-Tier Execution Sandbox](README.md#3-tier-execution-sandbox-guardrails): READ_ONLY, SAFE_WRITE, and FULL execution guardrails with mutex-guarded audit logging.
-- [Kinematic Trajectory Predictor](README.md#world-first-unimagined-innovations): 1000Hz fast-forward kinematic forward simulation (<0.1ms compute).
-- [Spatial ASCII Radar](README.md#world-first-unimagined-innovations): 360-degree LiDAR pointcloud translation to 2D text-based spatial grid.
-- [Predictive Neural Safety](README.md#world-first-unimagined-innovations): Real-time parameter clamping with Routh-Hurwitz stability proof.
+- [Kinematic Trajectory Predictor](README.md#%EF%B8%8F-predictive-simulation--safety-verification-architecture): 1000Hz fast-forward kinematic forward simulation (<0.1ms compute).
+- [Spatial ASCII Radar](README.md#%EF%B8%8F-predictive-simulation--safety-verification-architecture): 360-degree LiDAR pointcloud translation to 2D text-based spatial grid.
+- [Predictive Neural Safety](README.md#%EF%B8%8F-predictive-simulation--safety-verification-architecture): Real-time parameter clamping with Routh-Hurwitz stability proof.
 
 ## Tools & APIs
 - [Tool Reference](README.md#complete-16-tool-catalog): 16 standard MCP tools spanning topics, parameters, PID tuning, trajectory simulation, and swarm coordination.
 
 ## Optional
 - [Performance Benchmarking](docs/BENCHMARKS.md): Sub-millisecond latency (<0.08ms) and O(1) tool dispatch benchmarks.
-- [Client Integration Setup](docs/WORLD_FIRST_FEATURES.md): Configurations for Claude Desktop, Cursor IDE, Windsurf, and Antigravity IDE.
+- [Predictive Safety Architecture](docs/PREDICTIVE_SAFETY_ARCHITECTURE.md): Configurations for Claude Desktop, Cursor IDE, Windsurf, and Antigravity IDE.
 - [Automated Verification Suite](tests/): 42-test simulation-mode test suite verifying protocol and sandbox invariants.

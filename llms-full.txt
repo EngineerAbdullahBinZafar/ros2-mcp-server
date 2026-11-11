@@ -105,7 +105,7 @@ The server implements the Model Context Protocol (MCP) specification (version 20
 - Output: {"status": "ok"|"validation_error", "applied": list, "guidance": str}
 - Safety: Blocked in READ_ONLY; allowlisted in SAFE_WRITE; unrestricted in FULL.
 
-### 13. predict_trajectory [World-First]
+### 13. predict_trajectory
 - Description: Simulates robot motion trajectory (x, y, theta) over time dt_sec in <0.1ms compute.
 - Input Schema:
   - linear_x (number, required): Proposed forward linear velocity (m/s)
@@ -114,7 +114,7 @@ The server implements the Model Context Protocol (MCP) specification (version 20
 - Output: {"status": "success", "predicted_final_pose": {"x_m": float, "y_m": float, "heading_deg": float}, "safety_assessment": {"status": str, "risk_score": float}}
 - Safety: READ_ONLY, SAFE_WRITE, FULL
 
-### 14. predictive_safety_check [World-First]
+### 14. predictive_safety_check
 - Description: Evaluates proposed commands against stability constraints, auto-correcting unsafe LLM inputs and returning mathematical proofs.
 - Input Schema:
   - command_type (string, required): "tune_pid" or "publish_cmd_vel"
@@ -123,7 +123,7 @@ The server implements the Model Context Protocol (MCP) specification (version 20
 - Output: {"status": "success", "evaluated_safe_value": any, "auto_corrected": bool, "safety_reasoning": str, "control_theory_proof": str}
 - Safety: READ_ONLY, SAFE_WRITE, FULL
 
-### 15. get_spatial_map [World-First]
+### 15. get_spatial_map
 - Description: Converts 360-degree LiDAR pointclouds into a 2D ASCII radar grid directly inside MCP response JSON.
 - Input Schema:
   - scan_topic (string, default: "/scan"): LaserScan topic
@@ -132,7 +132,7 @@ The server implements the Model Context Protocol (MCP) specification (version 20
 - Output: {"status": "success", "spatial_grid_ascii": str, "obstacle_summary": {"clearance_front_m": float, "clearance_left_m": float, "clearance_right_m": float}}
 - Safety: READ_ONLY, SAFE_WRITE, FULL
 
-### 16. swarm_fleet_status [World-First]
+### 16. swarm_fleet_status
 - Description: Scans multi-namespace ROS 2 graph and aggregates multi-robot fleet health in one call.
 - Input Schema: {}
 - Output: {"status": "success", "total_active_fleet_members": int, "fleet_overview": dict, "namespaces": list}
