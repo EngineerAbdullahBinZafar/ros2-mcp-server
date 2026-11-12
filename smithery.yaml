@@ -1,0 +1,24 @@
+# Smithery configuration for ROS2 MCP Server
+# Reference: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties:
+      safety_level:
+        type: string
+        description: "Execution safety sandbox level: read_only, safe_write, or full"
+        enum:
+          - "read_only"
+          - "safe_write"
+          - "full"
+        default: "safe_write"
+      demo_sim:
+        type: boolean
+        description: "Run in simulated mock mode without active ROS2 hardware"
+        default: true
+  commandFunction:
+    - python
+    - -m
+    - ros2_mcp
